@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { TaskItem } from "../component/TaskItem";
 import { AddTaskItem } from "../component/AddTaskItem";
-import FeatherIcon from "react-native-vector-icons/Feather";
 
-const { width, height } = Dimensions.get("screen");
 
 export function HomeScreen(){
   const [task, setTask] = React.useState([
@@ -40,18 +38,28 @@ export function HomeScreen(){
     setTask(_task);
   }
 
+  function removeItem(id){
+    let _newTask = [...task].filter(ar => ar.id !== id);
+    setTask(_newTask);
+  }
+
   return(
     <View style={styles.rootContainer}>
       <Text style={styles.text}>Home Screen</Text>
       <FlatList 
         data={task}
         renderItem={({item}) => {
-          return(
-            <TaskItem 
-              item={item}
-              updateItem={(type, val) => updateItem(item.id, type, val)}
-            />
-          )
+          if(item.check === false){
+            return(
+              <TaskItem 
+                item={item}
+                updateItem={(type, val) => updateItem(item.id, type, val)}
+                removeItem={() => removeItem(item.id)}
+              />
+            )
+          } else {
+            return null
+          }
         }}
         ListFooterComponent={() => {
           return(
@@ -59,6 +67,22 @@ export function HomeScreen(){
               onPress={addItem}
             />
           )
+        }}
+      />
+      <FlatList 
+        data={task}
+        renderItem={({item}) => {
+          if(item.check === true){
+            return(
+              <TaskItem 
+                item={item}
+                updateItem={(type, val) => updateItem(item.id, type, val)}
+                removeItem={() => removeItem(item.id)}
+              />
+            )
+          } else {
+            return null
+          }
         }}
       />
     </View>

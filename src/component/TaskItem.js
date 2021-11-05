@@ -5,7 +5,7 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 
 const { width, height } = Dimensions.get("screen");
 
-export function TaskItem({updateItem, item}){
+export function TaskItem({updateItem, item, removeItem}){
 
   function clearText(){
     updateItem('name', '');
@@ -22,10 +22,15 @@ export function TaskItem({updateItem, item}){
         onValueChange={(newValue) => updateItem('check', newValue)}
       />
       <TextInput 
-        style={styles.itemText}
+        style={[styles.itemText, item.check && { textDecorationLine: 'line-through' }]}
         value={item?.name}
         onChangeText={(val) => updateItem('name', val)}
         multiline
+        onKeyPress={({ nativeEvent }) => {
+          if (nativeEvent.key === 'Backspace' && item?.name?.length === 0) {
+            removeItem();
+          }
+        }}
       />
       {
         item?.name?.length > 0 &&
