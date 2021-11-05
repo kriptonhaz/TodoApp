@@ -1,32 +1,66 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
+import { View, Text, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { TaskItem } from "../component/TaskItem";
+import { AddTaskItem } from "../component/AddTaskItem";
+import FeatherIcon from "react-native-vector-icons/Feather";
 
 const { width, height } = Dimensions.get("screen");
 
 export function HomeScreen(){
-  const [item, setItem] = React.useState({
-    name: 'Minyak Goreng',
-    check: false
-  })
+  const [task, setTask] = React.useState([
+    {
+      id: 1,
+      name: 'Minyak Goreng',
+      check: false
+    },
+    {
+      id: 2,
+      name: 'Sabun Cuci',
+      check: false
+    }
+  ])
+
+  function updateItem(id, type, value){
+    let _tmpItem = [...task].map((item, index) => {
+      if(item.id === id){
+        item[type] = value;
+      }
+      return item;
+    })
+    setTask(_tmpItem);
+  }
+
+  function addItem(){
+    let _tmpNewItem = {
+      id: task.length+1,
+      name: '',
+      check: false
+    }
+    let _task = [...task].concat(_tmpNewItem);
+    setTask(_task);
+  }
+
   return(
     <View style={styles.rootContainer}>
       <Text style={styles.text}>Home Screen</Text>
-      <View style={styles.itemContainer}>
-        <CheckBox 
-          value={item.check}
-          tintColors={{
-            true: '#fc7f03',
-            false: '#fc7f03'
-          }}
-          onValueChange={(newValue) => setItem({...item, check: newValue})}
-        />
-        <TextInput 
-          style={styles.itemText}
-          value={item.name}
-          onChangeText={(val) => setItem({...item, name: val})}
-        />
-      </View>
+      <FlatList 
+        data={task}
+        renderItem={({item}) => {
+          return(
+            <TaskItem 
+              item={item}
+              updateItem={(type, val) => updateItem(item.id, type, val)}
+            />
+          )
+        }}
+        ListFooterComponent={() => {
+          return(
+            <AddTaskItem 
+              onPress={addItem}
+            />
+          )
+        }}
+      />
     </View>
   )
 }
@@ -40,14 +74,5 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black'
-  },
-  itemContainer: {
-    width: width*0.8,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  itemText: {
-    color: 'black',
-    marginLeft: 5,
   }
 })
